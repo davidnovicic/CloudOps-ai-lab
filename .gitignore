@@ -5,3 +5,12 @@ __pycache__/
 .pytest_cache/
 *.py[cod]
 files
+# Terraform
+**/.terraform/*
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+# Local Terraform variables and secrets
+*.tfvars
+*.tfvars.json

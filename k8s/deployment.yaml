@@ -1,0 +1,51 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: cloudops-health-agent
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: cloudops-health-agent
+  template:
+    metadata:
+      labels:
+        app: cloudops-health-agent
+    spec:
+      containers:
+        - name: cloudops-health-agent
+          image: $registry/cloudops-health-agent:1.0
+          ports:
+            - containerPort: 8000
+          envFrom:
+            - secretRef:
+                name: cloudops-agent-secrets
+          resources:
+            requests:
+              cpu: 100m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 10
+            periodSeconds: 5
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            initialDelaySeconds: 30
+            periodSeconds: 10
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: cloudops-health-agent
+spec:
+  type: ClusterIP
+  selector:
+    app: cloudops-health-agent
+  ports:
+    - port: 8000
+      targetPort: 8000
